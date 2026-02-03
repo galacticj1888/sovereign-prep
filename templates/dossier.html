@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Meeting Prep: {{accountName}}</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    @media print {
+      .page-break { page-break-after: always; }
+      .no-print { display: none; }
+    }
+    .momentum-bar {
+      background: linear-gradient(to right,
+        #22c55e 0%, #22c55e var(--momentum),
+        #e5e7eb var(--momentum), #e5e7eb 100%);
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-900 font-sans">
+  <!-- Header -->
+  <header class="bg-gradient-to-r from-blue-600 to-blue-800 text-white py-6 px-8">
+    <div class="max-w-4xl mx-auto">
+      <div class="flex items-center gap-2 text-blue-200 text-sm mb-2">
+        <span>MEETING PREP</span>
+      </div>
+      <h1 class="text-3xl font-bold mb-1">{{accountName}}</h1>
+      <p class="text-xl text-blue-100">{{meetingTitle}}</p>
+      <p class="text-blue-200 mt-2">{{meetingDate}} &bull; {{meetingDuration}} min</p>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto py-8 px-8">
+    <!-- Page 1: Executive Summary -->
+    <section class="mb-12">
+      <!-- Deal Snapshot -->
+      <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">DEAL SNAPSHOT</h2>
+        <div class="grid grid-cols-5 gap-4 text-center">
+          <div class="border rounded-lg p-3">
+            <div class="text-xs text-gray-500 uppercase">Stage</div>
+            <div class="text-lg font-semibold">{{dealStage}}</div>
+          </div>
+          <div class="border rounded-lg p-3">
+            <div class="text-xs text-gray-500 uppercase">Value</div>
+            <div class="text-lg font-semibold">{{dealValue}}</div>
+          </div>
+          <div class="border rounded-lg p-3">
+            <div class="text-xs text-gray-500 uppercase">Close Date</div>
+            <div class="text-lg font-semibold">{{closeDate}}</div>
+          </div>
+          <div class="border rounded-lg p-3">
+            <div class="text-xs text-gray-500 uppercase">Days in Stage</div>
+            <div class="text-lg font-semibold">{{daysInStage}}</div>
+          </div>
+          <div class="border rounded-lg p-3">
+            <div class="text-xs text-gray-500 uppercase">Momentum</div>
+            <div class="h-2 rounded-full momentum-bar mt-2" style="--momentum: {{momentumPercent}}%"></div>
+            <div class="text-sm text-gray-600 mt-1">{{momentum}}</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Why This Meeting Matters -->
+      <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-700 mb-3">WHY THIS MEETING MATTERS</h2>
+        <p class="text-gray-600 leading-relaxed">{{whyThisMeetingMatters}}</p>
+      </div>
+
+      <!-- Top Goals -->
+      <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+        <h2 class="text-lg font-semibold text-gray-700 mb-3">TOP GOALS FOR THIS CALL</h2>
+        <ol class="space-y-3">
+          {{#topGoals}}
+          <li class="flex items-start gap-3">
+            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">{{index}}</span>
+            <span class="text-gray-600">{{goal}}</span>
+          </li>
+          {{/topGoals}}
+        </ol>
+      </div>
+
+      <!-- Red Flags -->
+      {{#hasRedFlags}}
+      <div class="bg-red-50 rounded-lg shadow-sm border border-red-200 p-6">
+        <h2 class="text-lg font-semibold text-red-700 mb-3 flex items-center gap-2">
+          <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+          </svg>
+          RED FLAGS / WATCH ITEMS
+        </h2>
+        <ul class="space-y-2">
+          {{#redFlags}}
+          <li class="flex items-start gap-2 text-red-700">
+            <span class="text-red-400">&bull;</span>
+            <span>{{flag}}</span>
+          </li>
+          {{/redFlags}}
+        </ul>
+      </div>
+      {{/hasRedFlags}}
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- Page 2: Participant Profiles -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+        </svg>
+        WHO'S ON THE CALL
+      </h2>
+
+      <!-- External Attendees -->
+      <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">External Attendees</h3>
+      <div class="space-y-4 mb-8">
+        {{#externalParticipants}}
+        <div class="bg-white rounded-lg shadow-sm border p-5">
+          <div class="flex justify-between items-start mb-3">
+            <div>
+              <h4 class="text-lg font-semibold text-gray-900">{{name}}</h4>
+              <p class="text-gray-600">{{title}}</p>
+            </div>
+            <span class="px-3 py-1 rounded-full text-sm font-medium {{roleClass}}">{{roleLabel}}</span>
+          </div>
+          <div class="text-sm text-gray-500 mb-3">
+            Influence: <span class="font-medium {{influenceClass}}">{{influence}}</span>
+          </div>
+          {{#background}}
+          <p class="text-gray-600 text-sm mb-3"><strong>Background:</strong> {{background}}</p>
+          {{/background}}
+          {{#lastInteraction}}
+          <p class="text-gray-600 text-sm mb-3"><strong>Last interaction:</strong> {{lastInteraction}}</p>
+          {{/lastInteraction}}
+          {{#whatTheyCareAbout}}
+          <p class="text-gray-600 text-sm mb-3"><strong>What they care about:</strong> {{whatTheyCareAbout}}</p>
+          {{/whatTheyCareAbout}}
+          {{#communicationNotes}}
+          <div class="bg-amber-50 border border-amber-200 rounded p-3 mt-3">
+            <p class="text-amber-800 text-sm">
+              <strong>Talking to {{firstName}}:</strong> {{communicationNotes}}
+            </p>
+          </div>
+          {{/communicationNotes}}
+          <div class="mt-3 text-sm">
+            {{#linkedInUrl}}<a href="{{linkedInUrl}}" class="text-blue-600 hover:underline mr-4">[LinkedIn]</a>{{/linkedInUrl}}
+            <span class="text-gray-500">{{email}}</span>
+          </div>
+        </div>
+        {{/externalParticipants}}
+      </div>
+
+      <!-- Internal Attendees -->
+      <h3 class="text-sm font-semibold text-gray-500 uppercase tracking-wide mb-4">Internal Attendees</h3>
+      <div class="bg-white rounded-lg shadow-sm border p-5 mb-6">
+        <ul class="space-y-2">
+          {{#internalParticipants}}
+          <li class="flex items-center gap-2 text-gray-700">
+            <span class="w-2 h-2 bg-blue-500 rounded-full"></span>
+            <strong>{{name}}</strong> &mdash; {{role}}
+          </li>
+          {{/internalParticipants}}
+        </ul>
+      </div>
+
+      <!-- Missing Stakeholders -->
+      {{#hasMissingStakeholders}}
+      <div class="bg-amber-50 rounded-lg border border-amber-200 p-5">
+        <h3 class="text-sm font-semibold text-amber-700 uppercase tracking-wide mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+          </svg>
+          WHO'S MISSING?
+        </h3>
+        <ul class="space-y-1">
+          {{#missingStakeholders}}
+          <li class="text-amber-700">&bull; {{missing}}</li>
+          {{/missingStakeholders}}
+        </ul>
+      </div>
+      {{/hasMissingStakeholders}}
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- Page 3: Timeline & Action Items -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
+        </svg>
+        ENGAGEMENT TIMELINE
+      </h2>
+
+      <div class="bg-white rounded-lg shadow-sm border p-6 mb-6">
+        <div class="relative">
+          {{#timeline}}
+          <div class="flex gap-4 mb-6 last:mb-0">
+            <div class="flex flex-col items-center">
+              <div class="w-3 h-3 {{dotClass}} rounded-full"></div>
+              <div class="w-0.5 h-full bg-gray-200 {{#isLast}}hidden{{/isLast}}"></div>
+            </div>
+            <div class="flex-1 pb-4">
+              <div class="flex items-center gap-3 mb-1">
+                <span class="text-sm font-medium text-gray-500">{{date}}</span>
+                {{#isToday}}<span class="px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">TODAY</span>{{/isToday}}
+                {{#isFuture}}<span class="px-2 py-0.5 bg-gray-100 text-gray-600 text-xs rounded-full">UPCOMING</span>{{/isFuture}}
+              </div>
+              <p class="text-gray-800 font-medium">{{title}}</p>
+              {{#duration}}<p class="text-sm text-gray-500">({{duration}} min)</p>{{/duration}}
+              {{#outcomes}}
+              <ul class="mt-2 space-y-1">
+                {{#items}}
+                <li class="text-sm text-gray-600 flex items-start gap-2">
+                  <span class="text-green-500">&#10003;</span>
+                  {{item}}
+                </li>
+                {{/items}}
+              </ul>
+              {{/outcomes}}
+            </div>
+          </div>
+          {{/timeline}}
+        </div>
+      </div>
+
+      <!-- Action Items -->
+      <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center gap-2">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+        </svg>
+        OPEN ACTION ITEMS
+      </h3>
+
+      <div class="grid md:grid-cols-2 gap-4">
+        <!-- Their Action Items -->
+        <div class="bg-white rounded-lg shadow-sm border p-5">
+          <h4 class="text-sm font-semibold text-gray-500 uppercase mb-3">THEIRS ({{accountName}})</h4>
+          <ul class="space-y-2">
+            {{#theirActionItems}}
+            <li class="flex items-start gap-2">
+              <span class="{{statusIcon}}">{{statusSymbol}}</span>
+              <span class="{{statusClass}}">{{description}} {{#isOverdue}}<span class="text-red-600 font-medium">&mdash; OVERDUE</span>{{/isOverdue}}</span>
+            </li>
+            {{/theirActionItems}}
+            {{^theirActionItems}}
+            <li class="text-gray-500 italic">No open items</li>
+            {{/theirActionItems}}
+          </ul>
+        </div>
+
+        <!-- Our Action Items -->
+        <div class="bg-white rounded-lg shadow-sm border p-5">
+          <h4 class="text-sm font-semibold text-gray-500 uppercase mb-3">OURS</h4>
+          <ul class="space-y-2">
+            {{#ourActionItems}}
+            <li class="flex items-start gap-2">
+              <span class="{{statusIcon}}">{{statusSymbol}}</span>
+              <span class="{{statusClass}}">{{description}} {{#isOverdue}}<span class="text-red-600 font-medium">&mdash; OVERDUE</span>{{/isOverdue}}</span>
+            </li>
+            {{/ourActionItems}}
+            {{^ourActionItems}}
+            <li class="text-gray-500 italic">No open items</li>
+            {{/ourActionItems}}
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <div class="page-break"></div>
+
+    <!-- Page 4: Strategic Insights -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
+        </svg>
+        STRATEGIC INSIGHTS
+      </h2>
+
+      <div class="grid md:grid-cols-2 gap-6 mb-6">
+        <!-- What's Working -->
+        <div class="bg-green-50 rounded-lg border border-green-200 p-5">
+          <h3 class="text-sm font-semibold text-green-700 uppercase mb-3 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
+            </svg>
+            WHAT'S WORKING
+          </h3>
+          <ul class="space-y-2">
+            {{#whatsWorking}}
+            <li class="text-green-700">&bull; {{item}}</li>
+            {{/whatsWorking}}
+            {{^whatsWorking}}
+            <li class="text-green-600 italic">Building momentum...</li>
+            {{/whatsWorking}}
+          </ul>
+        </div>
+
+        <!-- What Needs Attention -->
+        <div class="bg-amber-50 rounded-lg border border-amber-200 p-5">
+          <h3 class="text-sm font-semibold text-amber-700 uppercase mb-3 flex items-center gap-2">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            WHAT NEEDS ATTENTION
+          </h3>
+          <ul class="space-y-2">
+            {{#needsAttention}}
+            <li class="text-amber-700">&bull; {{item}}</li>
+            {{/needsAttention}}
+            {{^needsAttention}}
+            <li class="text-amber-600 italic">No issues identified</li>
+            {{/needsAttention}}
+          </ul>
+        </div>
+      </div>
+
+      <!-- Questions to Ask -->
+      <div class="bg-white rounded-lg shadow-sm border p-5 mb-6">
+        <h3 class="text-sm font-semibold text-gray-700 uppercase mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4 text-blue-600" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-8-3a1 1 0 00-.867.5 1 1 0 11-1.731-1A3 3 0 0113 8a3.001 3.001 0 01-2 2.83V11a1 1 0 11-2 0v-1a1 1 0 011-1 1 1 0 100-2zm0 8a1 1 0 100-2 1 1 0 000 2z" clip-rule="evenodd"/>
+          </svg>
+          QUESTIONS TO ASK THIS CALL
+        </h3>
+        <ol class="space-y-2">
+          {{#questionsToAsk}}
+          <li class="flex items-start gap-2 text-gray-700">
+            <span class="font-medium text-blue-600">{{index}}.</span>
+            <span>"{{question}}"</span>
+          </li>
+          {{/questionsToAsk}}
+        </ol>
+      </div>
+
+      <!-- Things to Avoid -->
+      {{#hasThingsToAvoid}}
+      <div class="bg-gray-100 rounded-lg border p-5 mb-6">
+        <h3 class="text-sm font-semibold text-gray-700 uppercase mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M13.477 14.89A6 6 0 015.11 6.524l8.367 8.368zm1.414-1.414L6.524 5.11a6 6 0 018.367 8.367zM18 10a8 8 0 11-16 0 8 8 0 0116 0z" clip-rule="evenodd"/>
+          </svg>
+          THINGS TO AVOID
+        </h3>
+        <ul class="space-y-2">
+          {{#thingsToAvoid}}
+          <li class="text-gray-600">&bull; {{item}}</li>
+          {{/thingsToAvoid}}
+        </ul>
+      </div>
+      {{/hasThingsToAvoid}}
+
+      <!-- Competitive Intel -->
+      {{#hasCompetitiveIntel}}
+      <div class="bg-purple-50 rounded-lg border border-purple-200 p-5">
+        <h3 class="text-sm font-semibold text-purple-700 uppercase mb-3 flex items-center gap-2">
+          <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M9 4.804A7.968 7.968 0 005.5 4c-1.255 0-2.443.29-3.5.804v10A7.969 7.969 0 015.5 14c1.669 0 3.218.51 4.5 1.385A7.962 7.962 0 0114.5 14c1.255 0 2.443.29 3.5.804v-10A7.968 7.968 0 0014.5 4c-1.255 0-2.443.29-3.5.804V12a1 1 0 11-2 0V4.804z"/>
+          </svg>
+          COMPETITIVE INTEL
+        </h3>
+        {{#competitorsDetected}}
+        <p class="text-purple-700 mb-2"><strong>Competitors detected:</strong> {{competitorsList}}</p>
+        {{/competitorsDetected}}
+        {{#competitiveNotes}}
+        <p class="text-purple-700">{{competitiveNotes}}</p>
+        {{/competitiveNotes}}
+        {{^competitorsDetected}}
+        <p class="text-purple-600 italic">No competitors detected in conversation history.</p>
+        {{/competitorsDetected}}
+      </div>
+      {{/hasCompetitiveIntel}}
+    </section>
+
+    <!-- Talking Points -->
+    <section class="mb-12">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+        <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+        </svg>
+        TALKING POINTS
+      </h2>
+
+      <div class="bg-white rounded-lg shadow-sm border p-6">
+        <ul class="space-y-4">
+          {{#talkingPoints}}
+          <li class="flex items-start gap-3">
+            <span class="flex-shrink-0 w-6 h-6 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center text-sm font-semibold">{{index}}</span>
+            <div>
+              <p class="text-gray-800">{{point}}</p>
+              {{#approach}}
+              <p class="text-gray-500 text-sm mt-1">&rarr; {{approach}}</p>
+              {{/approach}}
+            </div>
+          </li>
+          {{/talkingPoints}}
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="bg-gray-100 border-t py-4 px-8">
+    <div class="max-w-4xl mx-auto text-center text-sm text-gray-500">
+      Generated by Sovereign Prep &bull; {{generatedAt}}
+    </div>
+  </footer>
+</body>
+</html>

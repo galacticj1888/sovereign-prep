@@ -1,0 +1,55 @@
+{
+  "name": "sovereign-prep",
+  "version": "1.0.0",
+  "description": "Meeting Prep Dossier System - Automatically generate world-class preparation packets before every customer meeting",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/cli.js",
+    "cli": "tsx src/cli.ts",
+    "generate": "tsx src/cli.ts generate",
+    "generate:account": "tsx src/cli.ts generate:account",
+    "generate:quick": "tsx src/cli.ts generate:quick",
+    "scheduler": "tsx src/cli.ts scheduler:start",
+    "scheduler:status": "tsx src/cli.ts scheduler:status",
+    "demo": "tsx src/demo.ts",
+    "lint": "eslint src --ext .ts",
+    "lint:fix": "eslint src --ext .ts --fix",
+    "format": "prettier --write \"src/**/*.ts\"",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "tsx tests/e2e/dossier.e2e.ts"
+  },
+  "keywords": [
+    "meeting-prep",
+    "sales",
+    "dossier",
+    "crm",
+    "fireflies",
+    "slack"
+  ],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "node-cron": "^3.0.3",
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.17.14",
+    "@types/node-cron": "^3.0.11",
+    "@typescript-eslint/eslint-plugin": "^6.21.0",
+    "@typescript-eslint/parser": "^6.21.0",
+    "eslint": "^8.57.1",
+    "prettier": "^3.4.2",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.3",
+    "vitest": "^1.6.0"
+  },
+  "engines": {
+    "node": ">=20.0.0"
+  }
+}
