@@ -22,6 +22,11 @@ export {
   formatDuration,
 } from './dateUtils.js';
 export {
+  escapeHtml,
+  capitalize,
+  formatDealValue,
+} from './formatters.js';
+export {
   withRetry,
   executeWithRetry,
   makeRetryable,

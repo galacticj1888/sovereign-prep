@@ -14,9 +14,7 @@ import { z } from 'zod';
 import { logger } from '../utils/logger.js';
 import { formatISODate, getDateDaysAgo } from '../utils/dateUtils.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface SlackSearchOptions {
   daysBack?: number;
@@ -52,9 +50,7 @@ export interface SlackMention {
   sentiment?: 'positive' | 'neutral' | 'negative';
 }
 
-// ============================================================================
-// Zod Schemas for MCP Response Validation
-// ============================================================================
+// --- Zod Schemas for MCP Response Validation ---
 
 const SlackMessageSchema = z.object({
   channel: z.string(),
@@ -68,17 +64,7 @@ const SlackMessageSchema = z.object({
   reply_count: z.number().optional(),
 });
 
-// Note: Response schema defined for reference but parsed manually to handle variations
-// const SlackSearchResponseSchema = z.object({
-//   messages: z.object({
-//     matches: z.array(SlackMessageSchema).optional().default([]),
-//     total: z.number().optional(),
-//   }),
-// });
-
-// ============================================================================
-// Query Builder
-// ============================================================================
+// --- Query Builder ---
 
 /**
  * Build a Slack search query string
@@ -130,9 +116,7 @@ export function buildSearchQuery(keyword: string, options: SlackSearchOptions = 
   return parts.join(' ');
 }
 
-// ============================================================================
-// MCP Tool Interfaces
-// ============================================================================
+// --- MCP Tool Interfaces ---
 
 /**
  * Search for messages across all channels
@@ -231,9 +215,7 @@ export function getFetchMessageQuery(
   };
 }
 
-// ============================================================================
-// Response Parsers
-// ============================================================================
+// --- Response Parsers ---
 
 /**
  * Parse search results from MCP response
@@ -327,9 +309,7 @@ export function parseThreadMessages(response: unknown): SlackMessage[] {
   }
 }
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
+// --- Utility Functions ---
 
 /**
  * Get account mentions with search query

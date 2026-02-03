@@ -15,9 +15,7 @@ import { logger } from '../utils/logger.js';
 import { formatISODate, getDateDaysAgo } from '../utils/dateUtils.js';
 import type { ActionItem } from '../types/index.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface FirefliesSearchOptions {
   fromDate?: Date;
@@ -65,9 +63,7 @@ export interface FirefliesTranscript {
   keywords?: string[];
 }
 
-// ============================================================================
-// Zod Schemas for MCP Response Validation
-// ============================================================================
+// --- Zod Schemas ---
 
 const FirefliesSearchResultSchema = z.object({
   id: z.string(),
@@ -117,9 +113,7 @@ const FirefliesSummarySchema = z.object({
   keywords: z.array(z.string()).optional().default([]),
 });
 
-// ============================================================================
-// Query Builder
-// ============================================================================
+// --- Query Builder ---
 
 /**
  * Build a Fireflies search query using the mini grammar
@@ -173,9 +167,7 @@ export function buildSearchQuery(
   return parts.join(' ');
 }
 
-// ============================================================================
-// MCP Tool Interfaces
-// ============================================================================
+// --- MCP Tool Interfaces ---
 
 /**
  * Search transcripts by account name or keyword
@@ -251,9 +243,7 @@ export function getSummaryQuery(transcriptId: string): {
   };
 }
 
-// ============================================================================
-// Response Parsers
-// ============================================================================
+// --- Response Parsers ---
 
 /**
  * Parse search results from MCP response
@@ -354,9 +344,7 @@ export function parseSummary(
   }
 }
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
+// --- Utilities ---
 
 /**
  * Convert Fireflies action items to our ActionItem type

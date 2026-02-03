@@ -15,9 +15,7 @@ import { logger } from '../utils/logger.js';
 import { formatISODateTime, getDateDaysFromNow } from '../utils/dateUtils.js';
 import type { Meeting, Attendee, ResponseStatus } from '../types/index.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface CalendarListOptions {
   calendarId?: string;
@@ -49,9 +47,7 @@ export interface CalendarAttendee {
   self?: boolean;
 }
 
-// ============================================================================
-// Zod Schemas for MCP Response Validation
-// ============================================================================
+// --- Zod Schemas for MCP Response Validation ---
 
 const CalendarAttendeeSchema = z.object({
   email: z.string(),
@@ -97,9 +93,7 @@ const CalendarEventSchema = z.object({
   status: z.enum(['confirmed', 'tentative', 'cancelled']).optional().default('confirmed'),
 });
 
-// ============================================================================
-// MCP Tool Interfaces
-// ============================================================================
+// --- MCP Tool Interfaces ---
 
 /**
  * List upcoming calendar events
@@ -173,9 +167,7 @@ export function getListCalendarsQuery(): {
   };
 }
 
-// ============================================================================
-// Response Parsers
-// ============================================================================
+// --- Response Parsers ---
 
 /**
  * Parse calendar events from MCP response
@@ -276,9 +268,7 @@ export function parseEvent(response: unknown): CalendarEvent | null {
   }
 }
 
-// ============================================================================
-// Conversion Functions
-// ============================================================================
+// --- Conversion Functions ---
 
 /**
  * Convert CalendarEvent to Meeting type
@@ -335,9 +325,7 @@ function mapResponseStatus(status?: string): ResponseStatus | undefined {
   }
 }
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
+// --- Utility Functions ---
 
 /** Internal company domains - customize for your organization */
 const INTERNAL_DOMAINS = ['runlayer.com', 'anysourcehq.com'];

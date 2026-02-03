@@ -15,9 +15,7 @@ import type { Meeting } from '../types/meeting.js';
 import type { Dossier } from '../types/dossier.js';
 import type { AssemblerContext, DataSources } from '../intelligence/dossierAssembler.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface TriggerOptions {
   /** Account name to generate dossier for */
@@ -69,9 +67,7 @@ export interface BatchTriggerResult {
   errors: string[];
 }
 
-// ============================================================================
-// Main Trigger Functions
-// ============================================================================
+// --- Main Trigger Functions ---
 
 /**
  * Generate a dossier for a specific meeting or account
@@ -286,9 +282,7 @@ export async function triggerTomorrowsDossiers(
   return triggerBatchGeneration(tomorrowMeetings, options);
 }
 
-// ============================================================================
-// Helper Functions
-// ============================================================================
+// --- Helper Functions ---
 
 /**
  * Create a default meeting when none is provided
@@ -414,9 +408,7 @@ async function fetchCalendarData(_meeting?: Meeting): Promise<{ events: never[] 
   return await Promise.resolve({ events: [] });
 }
 
-// ============================================================================
-// Nightly Job Handler
-// ============================================================================
+// --- Nightly Job Handler ---
 
 /**
  * Handler for the nightly cron job
@@ -447,9 +439,7 @@ export async function nightlyJobHandler(): Promise<void> {
   }
 }
 
-// ============================================================================
-// Status Reporting
-// ============================================================================
+// --- Status Reporting ---
 
 /**
  * Generate a summary report of trigger results

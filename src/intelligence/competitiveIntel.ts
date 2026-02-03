@@ -9,9 +9,7 @@ import { logger } from '../utils/logger.js';
 import type { MergedData } from './merger.js';
 import type { TimelineEvent } from '../types/index.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface CompetitorMention {
   id: string;
@@ -60,9 +58,7 @@ export interface CompetitiveIntelContext {
   accountDomain: string;
 }
 
-// ============================================================================
-// Known Competitors Database
-// ============================================================================
+// --- Known Competitors Database ---
 
 // Common competitors and their aliases
 const KNOWN_COMPETITORS: Record<string, string[]> = {
@@ -107,9 +103,7 @@ const COMPETITIVE_SIGNALS = [
   'other options',
 ];
 
-// ============================================================================
-// Main Intelligence Extraction
-// ============================================================================
+// --- Main Intelligence Extraction ---
 
 /**
  * Extract competitive intelligence from all available data
@@ -153,9 +147,7 @@ export function extractCompetitiveIntel(context: CompetitiveIntelContext): Compe
   };
 }
 
-// ============================================================================
-// Extraction Functions
-// ============================================================================
+// --- Extraction Functions ---
 
 /**
  * Extract competitor mentions from a timeline event
@@ -318,9 +310,7 @@ function extractGenericCompetitiveContext(text: string): string {
   return '';
 }
 
-// ============================================================================
-// Profile Building
-// ============================================================================
+// --- Profile Building ---
 
 /**
  * Build competitor profiles from mentions
@@ -365,9 +355,7 @@ function buildCompetitorProfiles(mentions: CompetitorMention[]): CompetitorProfi
   return profiles;
 }
 
-// ============================================================================
-// Risk Identification
-// ============================================================================
+// --- Risk Identification ---
 
 /**
  * Identify competitive risks from profiles and mentions
@@ -442,9 +430,7 @@ function identifyCompetitiveRisks(
   return risks;
 }
 
-// ============================================================================
-// Summary Generation
-// ============================================================================
+// --- Summary Generation ---
 
 /**
  * Generate competitive landscape summary
@@ -504,9 +490,7 @@ function extractDifferentiators(mentions: CompetitorMention[]): string[] {
   return [...new Set(differentiators)];
 }
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
+// --- Utility Functions ---
 
 /**
  * Get competitors sorted by risk level

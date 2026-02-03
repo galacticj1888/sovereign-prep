@@ -6,9 +6,7 @@
 
 import { logger } from './logger.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface RetryOptions {
   /** Maximum number of retry attempts (default: 3) */
@@ -37,9 +35,7 @@ export interface RetryResult<T> {
   totalTimeMs: number;
 }
 
-// ============================================================================
-// Default Configuration
-// ============================================================================
+// --- Default Configuration ---
 
 const DEFAULT_OPTIONS: Required<Omit<RetryOptions, 'isRetryable' | 'onRetry' | 'operationName'>> = {
   maxAttempts: 3,
@@ -49,9 +45,7 @@ const DEFAULT_OPTIONS: Required<Omit<RetryOptions, 'isRetryable' | 'onRetry' | '
   jitter: true,
 };
 
-// ============================================================================
-// Retry Functions
-// ============================================================================
+// --- Retry Functions ---
 
 /**
  * Execute an async function with retry logic
@@ -149,9 +143,7 @@ export function makeRetryable<TArgs extends unknown[], TResult>(
   };
 }
 
-// ============================================================================
-// Circuit Breaker
-// ============================================================================
+// --- Circuit Breaker ---
 
 export interface CircuitBreakerOptions {
   /** Number of failures before opening circuit (default: 5) */
@@ -266,9 +258,7 @@ export class CircuitOpenError extends Error {
   }
 }
 
-// ============================================================================
-// Retry with Circuit Breaker
-// ============================================================================
+// --- Retry with Circuit Breaker ---
 
 /**
  * Execute with both retry and circuit breaker protection
@@ -281,9 +271,7 @@ export async function withRetryAndCircuitBreaker<T>(
   return circuitBreaker.execute(() => withRetry(operation, retryOptions));
 }
 
-// ============================================================================
-// Predefined Retry Strategies
-// ============================================================================
+// --- Predefined Retry Strategies ---
 
 /**
  * Strategy for API calls - moderate retry with backoff
@@ -332,9 +320,7 @@ export const QUICK_RETRY_OPTIONS: RetryOptions = {
   jitter: false,
 };
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
+// --- Utility Functions ---
 
 /**
  * Sleep for a specified duration

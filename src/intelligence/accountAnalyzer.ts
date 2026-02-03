@@ -16,9 +16,7 @@ import type {
 } from '../types/index.js';
 import type { MergedData } from './merger.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface AccountAnalysis {
   momentum: Momentum;
@@ -37,9 +35,7 @@ export interface AnalysisOptions {
   stageStartDate?: Date;
 }
 
-// ============================================================================
-// Main Analysis Functions
-// ============================================================================
+// --- Main Analysis Functions ---
 
 /**
  * Analyze account state from merged data
@@ -112,9 +108,7 @@ export function applyAnalysisToAccount(
   };
 }
 
-// ============================================================================
-// Metric Calculations
-// ============================================================================
+// --- Metric Calculations ---
 
 /**
  * Calculate days since last contact
@@ -229,9 +223,7 @@ function calculateHealthScore(
   return Math.max(0, Math.min(100, score));
 }
 
-// ============================================================================
-// Risk Detection
-// ============================================================================
+// --- Risk Detection ---
 
 /**
  * Detect risks from account data
@@ -340,9 +332,7 @@ function detectRisks(
   return risks;
 }
 
-// ============================================================================
-// Insight Generation
-// ============================================================================
+// --- Insight Generation ---
 
 /**
  * Generate human-readable insights
@@ -395,9 +385,7 @@ function generateInsights(
   return insights;
 }
 
-// ============================================================================
-// Timeline Analysis
-// ============================================================================
+// --- Timeline Analysis ---
 
 /**
  * Analyze timeline for patterns

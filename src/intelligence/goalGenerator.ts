@@ -11,9 +11,7 @@ import type { MergedData } from './merger.js';
 import type { AccountAnalysis } from './accountAnalyzer.js';
 import type { ParticipantProfile } from './participantProfiler.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface Goal {
   id: string;
@@ -33,9 +31,7 @@ export interface GoalGenerationContext {
   meetingTitle?: string;
 }
 
-// ============================================================================
-// Deal Stage Goal Templates
-// ============================================================================
+// --- Deal Stage Goal Templates ---
 
 interface StageGoalTemplate {
   stages: string[];
@@ -131,56 +127,38 @@ const STAGE_GOAL_TEMPLATES: StageGoalTemplate[] = [
   },
 ];
 
-// ============================================================================
-// Main Goal Generation
-// ============================================================================
+// --- Main Goal Generation ---
 
 /**
  * Generate prioritized goals for a meeting
  */
 export function generateGoals(context: GoalGenerationContext): Goal[] {
   const log = logger.child('goals');
-  const goals: Goal[] = [];
-  let nextId = 1;
 
-  // 1. Stage-based goals
-  const stageGoals = generateStageGoals(context);
-  for (const goal of stageGoals) {
-    goals.push({ ...goal, id: `goal-${nextId++}` });
-  }
+  // Collect all goals from generators
+  const allPartialGoals = [
+    ...generateStageGoals(context),
+    ...generateRiskGoals(context),
+    ...generateActionItemGoals(context),
+    ...generateStakeholderGoals(context),
+  ];
 
-  // 2. Risk-based goals
-  const riskGoals = generateRiskGoals(context);
-  for (const goal of riskGoals) {
-    goals.push({ ...goal, id: `goal-${nextId++}` });
-  }
+  // Assign IDs
+  const goals = allPartialGoals.map((goal, index) => ({
+    ...goal,
+    id: `goal-${index + 1}`,
+  }));
 
-  // 3. Action item follow-up goals
-  const actionGoals = generateActionItemGoals(context);
-  for (const goal of actionGoals) {
-    goals.push({ ...goal, id: `goal-${nextId++}` });
-  }
-
-  // 4. Stakeholder-based goals
-  const stakeholderGoals = generateStakeholderGoals(context);
-  for (const goal of stakeholderGoals) {
-    goals.push({ ...goal, id: `goal-${nextId++}` });
-  }
-
-  // Sort by priority and deduplicate similar goals
-  const deduped = deduplicateGoals(goals);
-  const sorted = deduped.sort((a, b) => a.priority - b.priority);
-
-  // Return top 5 goals
-  const topGoals = sorted.slice(0, 5);
+  // Deduplicate, sort by priority, and return top 5
+  const topGoals = deduplicateGoals(goals)
+    .sort((a, b) => a.priority - b.priority)
+    .slice(0, 5);
 
   log.info(`Generated ${topGoals.length} goals for meeting`);
   return topGoals;
 }
 
-// ============================================================================
-// Goal Generation by Category
-// ============================================================================
+// --- Goal Generation by Category ---
 
 /**
  * Generate goals based on deal stage
@@ -352,9 +330,7 @@ function generateStakeholderGoals(context: GoalGenerationContext): Omit<Goal, 'i
   return goals;
 }
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
+// --- Utility Functions ---
 
 /**
  * Check if economic buyer is engaged

@@ -14,9 +14,7 @@
 import { z } from 'zod';
 import { logger } from '../utils/logger.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface CompanyInfo {
   name: string;
@@ -59,9 +57,7 @@ export interface WebsetSearchOptions {
   count?: number;
 }
 
-// ============================================================================
-// Zod Schemas for MCP Response Validation
-// ============================================================================
+// --- Zod Schemas for MCP Response Validation ---
 
 const WebsetItemSchema = z.object({
   id: z.string(),
@@ -80,9 +76,7 @@ const WebsetSchema = z.object({
   status: z.string().optional(),
 });
 
-// ============================================================================
-// MCP Tool Interfaces
-// ============================================================================
+// --- MCP Tool Interfaces ---
 
 /**
  * Create a webset for company research
@@ -226,9 +220,7 @@ export function getWebsetQuery(websetId: string): {
   };
 }
 
-// ============================================================================
-// Response Parsers
-// ============================================================================
+// --- Response Parsers ---
 
 /**
  * Parse webset items from MCP response
@@ -315,9 +307,7 @@ export function parseWebset(response: unknown): {
   }
 }
 
-// ============================================================================
-// Conversion Functions
-// ============================================================================
+// --- Conversion Functions ---
 
 /**
  * Convert webset items to CompanyInfo

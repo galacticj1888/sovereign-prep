@@ -20,9 +20,7 @@ import type { SlackMessage, SlackMention } from '../sources/slack.js';
 import type { CalendarEvent } from '../sources/calendar.js';
 import { extractDomain, isInternalEmail } from '../sources/calendar.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface MergedData {
   account: Partial<Account>;
@@ -51,9 +49,7 @@ export interface MergeOptions {
   daysOfHistory?: number;
 }
 
-// ============================================================================
-// Main Merger
-// ============================================================================
+// --- Main Merger ---
 
 /**
  * Merge data from all sources into unified models
@@ -100,9 +96,7 @@ export function mergeAllData(
   return result;
 }
 
-// ============================================================================
-// Source-Specific Mergers
-// ============================================================================
+// --- Source-Specific Mergers ---
 
 /**
  * Merge Fireflies transcript data
@@ -278,9 +272,7 @@ function mergeCalendarData(
   }
 }
 
-// ============================================================================
-// Post-Processing
-// ============================================================================
+// --- Post-Processing ---
 
 /**
  * Deduplicate and consolidate participant data
@@ -342,9 +334,7 @@ function computeAccountMetrics(result: MergedData): void {
   account.timeline = result.timeline;
 }
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
+// --- Utility Functions ---
 
 /**
  * Convert Fireflies action item to our ActionItem type

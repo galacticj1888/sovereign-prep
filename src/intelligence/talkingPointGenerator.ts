@@ -12,9 +12,7 @@ import type { ParticipantProfile } from './participantProfiler.js';
 import type { MergedData } from './merger.js';
 import type { Account } from '../types/index.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface TalkingPoint {
   id: string;
@@ -45,70 +43,37 @@ export interface TalkingPointContext {
   meetingTitle?: string;
 }
 
-// ============================================================================
-// Main Talking Point Generation
-// ============================================================================
+// --- Main Talking Point Generation ---
 
 /**
  * Generate talking points for a meeting
  */
 export function generateTalkingPoints(context: TalkingPointContext): TalkingPoint[] {
   const log = logger.child('talking-points');
-  const points: TalkingPoint[] = [];
-  let nextId = 1;
 
-  // 1. Opening talking points
-  const openers = generateOpeners(context);
-  for (const point of openers) {
-    points.push({ ...point, id: `tp-${nextId++}` });
-  }
+  // Collect all points from generators
+  const allPartialPoints = [
+    ...generateOpeners(context),
+    ...generateGoalSupportPoints(context),
+    ...generateRiskMitigationPoints(context),
+    ...generateStakeholderPoints(context),
+    ...generateActionFollowUpPoints(context),
+    ...generateValuePoints(context),
+    ...generateNextStepsPoints(context),
+  ];
 
-  // 2. Goal-supporting points
-  const goalPoints = generateGoalSupportPoints(context);
-  for (const point of goalPoints) {
-    points.push({ ...point, id: `tp-${nextId++}` });
-  }
+  // Assign IDs and sort by priority
+  const points = allPartialPoints.map((point, index) => ({
+    ...point,
+    id: `tp-${index + 1}`,
+  }));
+  points.sort((a, b) => a.priority - b.priority);
 
-  // 3. Risk mitigation points
-  const riskPoints = generateRiskMitigationPoints(context);
-  for (const point of riskPoints) {
-    points.push({ ...point, id: `tp-${nextId++}` });
-  }
-
-  // 4. Stakeholder-specific points
-  const stakeholderPoints = generateStakeholderPoints(context);
-  for (const point of stakeholderPoints) {
-    points.push({ ...point, id: `tp-${nextId++}` });
-  }
-
-  // 5. Action item follow-ups
-  const actionPoints = generateActionFollowUpPoints(context);
-  for (const point of actionPoints) {
-    points.push({ ...point, id: `tp-${nextId++}` });
-  }
-
-  // 6. Value proposition reinforcement
-  const valuePoints = generateValuePoints(context);
-  for (const point of valuePoints) {
-    points.push({ ...point, id: `tp-${nextId++}` });
-  }
-
-  // 7. Next steps points
-  const nextStepsPoints = generateNextStepsPoints(context);
-  for (const point of nextStepsPoints) {
-    points.push({ ...point, id: `tp-${nextId++}` });
-  }
-
-  // Sort by priority and deduplicate
-  const sorted = points.sort((a, b) => a.priority - b.priority);
-
-  log.info(`Generated ${sorted.length} talking points`);
-  return sorted;
+  log.info(`Generated ${points.length} talking points`);
+  return points;
 }
 
-// ============================================================================
-// Category-Specific Generators
-// ============================================================================
+// --- Category-Specific Generators ---
 
 /**
  * Generate opening talking points
@@ -465,9 +430,7 @@ function generateNextStepsPoints(context: TalkingPointContext): Omit<TalkingPoin
   return points;
 }
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
+// --- Utility Functions ---
 
 /**
  * Format days ago as human-readable string

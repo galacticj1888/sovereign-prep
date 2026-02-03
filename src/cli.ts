@@ -25,9 +25,7 @@ import {
 // Load environment variables
 config();
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 interface CLICommand {
   name: string;
@@ -36,9 +34,7 @@ interface CLICommand {
   handler: (args: string[]) => void | Promise<void>;
 }
 
-// ============================================================================
-// Command Handlers
-// ============================================================================
+// --- Command Handlers ---
 
 /**
  * Generate dossiers for tomorrow's meetings
@@ -291,9 +287,7 @@ function handleVersion(_args: string[]): void {
   console.log('Sovereign Prep v1.0.0');
 }
 
-// ============================================================================
-// Command Registry
-// ============================================================================
+// --- Command Registry ---
 
 const commands: Record<string, CLICommand> = {
   generate: {
@@ -358,9 +352,7 @@ const commands: Record<string, CLICommand> = {
   },
 };
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
+// --- Utility Functions ---
 
 /**
  * Guess domain from account name
@@ -382,9 +374,7 @@ function parseArgs(argv: string[]): { command: string; args: string[] } {
   return { command, args: commandArgs };
 }
 
-// ============================================================================
-// Main Entry Point
-// ============================================================================
+// --- Main Entry Point ---
 
 async function main(): Promise<void> {
   const { command, args } = parseArgs(process.argv);

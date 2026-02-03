@@ -8,9 +8,7 @@
 import cron from 'node-cron';
 import { logger } from '../utils/logger.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface ScheduledJob {
   id: string;
@@ -45,9 +43,7 @@ export interface SchedulerStats {
   lastActivity?: Date;
 }
 
-// ============================================================================
-// Scheduler Class
-// ============================================================================
+// --- Scheduler Class ---
 
 export class Scheduler {
   private jobs: Map<string, ScheduledJob> = new Map();
@@ -272,9 +268,7 @@ export class Scheduler {
   }
 }
 
-// ============================================================================
-// Default Scheduler Instance
-// ============================================================================
+// --- Default Scheduler Instance ---
 
 let defaultScheduler: Scheduler | null = null;
 
@@ -298,9 +292,7 @@ export function resetScheduler(): void {
   }
 }
 
-// ============================================================================
-// Predefined Schedules
-// ============================================================================
+// --- Predefined Schedules ---
 
 export const SCHEDULES = {
   /** Every minute (for testing) */
@@ -319,9 +311,7 @@ export const SCHEDULES = {
   WEEKLY_SUNDAY: '0 0 * * 0',
 } as const;
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
+// --- Utility Functions ---
 
 /**
  * Validate a cron expression
@@ -341,25 +331,17 @@ export function describeCronSchedule(expression: string): string {
 
   const [minute, hour, dayOfMonth, month, dayOfWeek] = parts;
 
-  // Handle common patterns
-  if (expression === SCHEDULES.EVERY_MINUTE) {
-    return 'Every minute';
-  }
-  if (expression === SCHEDULES.HOURLY) {
-    return 'Every hour at minute 0';
-  }
-  if (expression === SCHEDULES.NIGHTLY_9PM) {
-    return 'Daily at 9:00 PM';
-  }
-  if (expression === SCHEDULES.MORNING_6AM) {
-    return 'Daily at 6:00 AM';
-  }
-  if (expression === SCHEDULES.WEEKDAYS_9PM) {
-    return 'Weekdays at 9:00 PM';
-  }
-  if (expression === SCHEDULES.WEEKLY_SUNDAY) {
-    return 'Sundays at midnight';
-  }
+  // Handle common patterns with lookup
+  const knownSchedules: Record<string, string> = {
+    [SCHEDULES.EVERY_MINUTE]: 'Every minute',
+    [SCHEDULES.HOURLY]: 'Every hour at minute 0',
+    [SCHEDULES.NIGHTLY_9PM]: 'Daily at 9:00 PM',
+    [SCHEDULES.MORNING_6AM]: 'Daily at 6:00 AM',
+    [SCHEDULES.WEEKDAYS_9PM]: 'Weekdays at 9:00 PM',
+    [SCHEDULES.WEEKLY_SUNDAY]: 'Sundays at midnight',
+  };
+  const knownDescription = knownSchedules[expression];
+  if (knownDescription) return knownDescription;
 
   // Generic description
   let description = '';

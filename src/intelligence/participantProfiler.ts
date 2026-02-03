@@ -14,9 +14,7 @@ import type {
 } from '../types/index.js';
 import type { PersonInfo } from '../sources/exa.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface ParticipantProfile extends Participant {
   enrichmentSource?: 'exa' | 'linkedin' | 'manual' | 'inferred';
@@ -31,9 +29,7 @@ export interface ProfileEnrichmentOptions {
   inferInfluence?: boolean;
 }
 
-// ============================================================================
-// Role Classification
-// ============================================================================
+// --- Role Classification ---
 
 /** Keywords that suggest different roles */
 const ROLE_KEYWORDS: Record<ParticipantRole, string[]> = {
@@ -112,9 +108,7 @@ const TITLE_ROLE_PATTERNS: Array<{ pattern: RegExp; role: ParticipantRole }> = [
   { pattern: /\b(analyst|specialist)\b/i, role: 'influencer' },
 ];
 
-// ============================================================================
-// Influence Assessment
-// ============================================================================
+// --- Influence Assessment ---
 
 /** Title patterns that suggest influence levels */
 const INFLUENCE_PATTERNS: Array<{ pattern: RegExp; influence: InfluenceLevel }> = [
@@ -126,9 +120,7 @@ const INFLUENCE_PATTERNS: Array<{ pattern: RegExp; influence: InfluenceLevel }> 
   { pattern: /\b(junior|jr\.?|associate|intern)\b/i, influence: 'low' },
 ];
 
-// ============================================================================
-// Main Profiling Functions
-// ============================================================================
+// --- Main Profiling Functions ---
 
 /**
  * Enrich a participant with additional profile data
@@ -206,9 +198,7 @@ export function profileParticipants(
   return profiles;
 }
 
-// ============================================================================
-// Inference Functions
-// ============================================================================
+// --- Inference Functions ---
 
 /**
  * Infer participant role from title and interaction history
@@ -316,9 +306,7 @@ function calculateConfidence(profile: ParticipantProfile): number {
   return factors > 0 ? score / factors : 0;
 }
 
-// ============================================================================
-// Analysis Functions
-// ============================================================================
+// --- Analysis Functions ---
 
 /**
  * Analyze interactions to extract what the participant cares about
@@ -365,20 +353,14 @@ export function generateCommunicationNotes(
   const notes: string[] = [];
 
   // Based on role
-  switch (profile.role) {
-    case 'technical-evaluator':
-      notes.push('Lead with technical depth and specifics.');
-      break;
-    case 'economic-buyer':
-      notes.push('Focus on ROI, business value, and outcomes.');
-      break;
-    case 'champion':
-      notes.push('They are an advocate - keep them informed and engaged.');
-      break;
-    case 'blocker':
-      notes.push('Address their concerns directly and proactively.');
-      break;
-  }
+  const roleNotes: Record<string, string> = {
+    'technical-evaluator': 'Lead with technical depth and specifics.',
+    'economic-buyer': 'Focus on ROI, business value, and outcomes.',
+    'champion': 'They are an advocate - keep them informed and engaged.',
+    'blocker': 'Address their concerns directly and proactively.',
+  };
+  const roleNote = roleNotes[profile.role];
+  if (roleNote) notes.push(roleNote);
 
   // Based on influence
   if (profile.influence === 'high') {
@@ -401,31 +383,14 @@ export function generateCommunicationNotes(
 export function identifyMissingStakeholders(
   profiles: Map<string, ParticipantProfile>
 ): string[] {
-  const missing: string[] = [];
-
   const profileArray = Array.from(profiles.values());
+  const hasRole = (role: string): boolean => profileArray.some(p => p.role === role);
 
-  // Check for economic buyer
-  const hasEconomicBuyer = profileArray.some(
-    p => p.role === 'economic-buyer'
-  );
-  if (!hasEconomicBuyer) {
-    missing.push('Economic buyer not yet identified');
-  }
+  const requiredRoles: Array<{ role: string; message: string }> = [
+    { role: 'economic-buyer', message: 'Economic buyer not yet identified' },
+    { role: 'technical-evaluator', message: 'Technical evaluator not yet engaged' },
+    { role: 'champion', message: 'No clear champion identified' },
+  ];
 
-  // Check for technical evaluator
-  const hasTechnicalEvaluator = profileArray.some(
-    p => p.role === 'technical-evaluator'
-  );
-  if (!hasTechnicalEvaluator) {
-    missing.push('Technical evaluator not yet engaged');
-  }
-
-  // Check for champion
-  const hasChampion = profileArray.some(p => p.role === 'champion');
-  if (!hasChampion) {
-    missing.push('No clear champion identified');
-  }
-
-  return missing;
+  return requiredRoles.filter(r => !hasRole(r.role)).map(r => r.message);
 }

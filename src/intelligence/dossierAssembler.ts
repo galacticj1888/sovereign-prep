@@ -6,6 +6,7 @@
  */
 
 import { logger } from '../utils/logger.js';
+import { formatDealValue } from '../utils/formatters.js';
 import { mergeAllData } from './merger.js';
 import type { MergedData, FirefliesData, SlackData, CalendarData } from './merger.js';
 import { analyzeAccount, applyAnalysisToAccount } from './accountAnalyzer.js';
@@ -30,10 +31,9 @@ import type { Meeting, Attendee } from '../types/meeting.js';
 import type { Account } from '../types/account.js';
 import type { Participant, InternalParticipant } from '../types/participant.js';
 import type { PersonInfo } from '../sources/exa.js';
+import { isInternalEmail } from '../sources/calendar.js';
 
-// ============================================================================
-// Types
-// ============================================================================
+// --- Types ---
 
 export interface DataSources {
   fireflies: FirefliesData;
@@ -70,9 +70,7 @@ export interface AssemblerResult {
   };
 }
 
-// ============================================================================
-// Main Assembler
-// ============================================================================
+// --- Main Assembler ---
 
 /**
  * Assemble a complete meeting prep dossier
@@ -205,9 +203,7 @@ export function assembleDossier(
   };
 }
 
-// ============================================================================
-// Builder Functions
-// ============================================================================
+// --- Builder Functions ---
 
 /**
  * Build the Account object from merged data and analysis
@@ -477,35 +473,8 @@ function formatTalkingPointsForDossier(points: TalkingPoint[]): string[] {
   });
 }
 
-// ============================================================================
-// Utility Functions
-// ============================================================================
 
-/**
- * Check if email is internal (our domain)
- */
-function isInternalEmail(email: string): boolean {
-  const internalDomains = ['runlayer.com', 'anthropic.com'];
-  const domain = email.split('@')[1]?.toLowerCase() ?? '';
-  return internalDomains.some(d => domain === d);
-}
-
-/**
- * Format deal value as currency string
- */
-function formatDealValue(value: number): string {
-  if (value >= 1_000_000) {
-    return `$${(value / 1_000_000).toFixed(1)}M`;
-  }
-  if (value >= 1_000) {
-    return `$${(value / 1_000).toFixed(0)}K`;
-  }
-  return `$${value}`;
-}
-
-// ============================================================================
-// Export Helpers
-// ============================================================================
+// --- Export Helpers ---
 
 /**
  * Create a minimal dossier for quick prep
