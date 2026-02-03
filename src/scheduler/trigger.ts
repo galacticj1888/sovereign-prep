@@ -17,6 +17,56 @@ import type { AssemblerContext, DataSources } from '../intelligence/dossierAssem
 
 // --- Types ---
 
+/** Raw MCP response from Fireflies search */
+export interface MCPFirefliesTranscript {
+  id: string;
+  title: string;
+  dateString: string;
+  duration: number;
+  organizerEmail?: string;
+  meetingLink?: string;
+  summary?: {
+    short_summary?: string;
+    keywords?: string[];
+    action_items?: string;
+  };
+  meetingAttendees?: Array<{ displayName?: string; email: string }>;
+  participants?: string[];
+}
+
+/** Raw MCP response from Slack search */
+export interface MCPSlackMessage {
+  type: string;
+  channel: { id: string; name: string; is_private: boolean };
+  user: string;
+  user_name: string;
+  username: string;
+  text: string;
+  ts: string;
+  timestamp: string;
+  permalink?: string;
+}
+
+/** Pre-fetched MCP data to avoid stubs */
+export interface MCPData {
+  fireflies?: {
+    transcripts: MCPFirefliesTranscript[];
+  };
+  slack?: {
+    messages: MCPSlackMessage[];
+  };
+  calendar?: {
+    events: Array<{
+      id: string;
+      title: string;
+      start: string;
+      end: string;
+      attendees?: string[];
+      location?: string;
+    }>;
+  };
+}
+
 export interface TriggerOptions {
   /** Account name to generate dossier for */
   accountName?: string;
@@ -38,6 +88,8 @@ export interface TriggerOptions {
   driveFolderId?: string;
   /** Generate quick dossier without external data */
   quickMode?: boolean;
+  /** Pre-fetched MCP data (bypasses stub fetchers) */
+  mcpData?: MCPData;
 }
 
 export interface TriggerResult {
@@ -324,8 +376,8 @@ function createAssemblerContext(
 /**
  * Fetch data from all sources in parallel
  *
- * Uses Promise.allSettled for graceful degradation - if one source
- * fails, we still get data from the others.
+ * If mcpData is provided, transforms and uses that data.
+ * Otherwise falls back to stub fetchers.
  */
 async function fetchDataSources(options: TriggerOptions): Promise<DataSources> {
   const log = logger.child('data-fetch');
@@ -334,7 +386,24 @@ async function fetchDataSources(options: TriggerOptions): Promise<DataSources> {
   log.info(`Fetching data for: ${accountName}`);
   const startTime = Date.now();
 
-  // Execute all fetches in parallel with graceful error handling
+  // If MCP data is provided, transform and use it
+  if (options.mcpData) {
+    log.info('Using pre-fetched MCP data');
+    const fireflies = transformMCPFireflies(options.mcpData.fireflies);
+    const slack = transformMCPSlack(options.mcpData.slack);
+    const calendar = transformMCPCalendar(options.mcpData.calendar);
+
+    const duration = Date.now() - startTime;
+    log.info(`MCP data transformed in ${duration}ms`, {
+      transcripts: fireflies.transcripts.length,
+      slackMessages: slack.messages.length,
+      calendarEvents: calendar.events.length,
+    });
+
+    return { fireflies, slack, calendar };
+  }
+
+  // Fallback: Execute all fetches in parallel with graceful error handling
   const [firefliesResult, slackResult, calendarResult] = await Promise.allSettled([
     fetchFirefliesData(accountName),
     fetchSlackData(accountName),
@@ -406,6 +475,126 @@ async function fetchCalendarData(_meeting?: Meeting): Promise<{ events: never[] 
   // const results = await mcp.call('mcp__google-calendar-2__list_events', { ... });
   // return { events: results };
   return await Promise.resolve({ events: [] });
+}
+
+// --- MCP Data Transformers ---
+
+import type { FirefliesTranscript, FirefliesActionItem } from '../sources/fireflies.js';
+import type { SlackMessage, SlackMention } from '../sources/slack.js';
+import type { CalendarEvent } from '../sources/calendar.js';
+
+/**
+ * Transform raw MCP Fireflies response to internal format
+ */
+function transformMCPFireflies(
+  data?: { transcripts: MCPFirefliesTranscript[] }
+): { transcripts: FirefliesTranscript[] } {
+  if (!data || !data.transcripts) {
+    return { transcripts: [] };
+  }
+
+  const transcripts: FirefliesTranscript[] = data.transcripts.map(t => {
+    // Parse action items from the summary string
+    const actionItems: FirefliesActionItem[] = [];
+    if (t.summary?.action_items) {
+      // Action items format: "**Person**\nItem1\nItem2\n\n**Person2**\nItem3"
+      const lines = t.summary.action_items.split('\n');
+      let currentAssignee = '';
+      for (const line of lines) {
+        const assigneeMatch = line.match(/^\*\*(.+?)\*\*$/);
+        if (assigneeMatch && assigneeMatch[1]) {
+          currentAssignee = assigneeMatch[1];
+        } else if (line.trim() && !line.startsWith('**')) {
+          actionItems.push({
+            text: line.trim(),
+            assignee: currentAssignee || undefined,
+          });
+        }
+      }
+    }
+
+    return {
+      id: t.id,
+      title: t.title,
+      date: new Date(t.dateString),
+      duration: Math.round(t.duration),
+      participants: t.participants ?? t.meetingAttendees?.map(a => a.email) ?? [],
+      organizerEmail: t.organizerEmail,
+      summary: t.summary?.short_summary,
+      overview: t.summary?.short_summary,
+      actionItems,
+      sentences: [], // Detailed sentences require separate fetch
+      keywords: t.summary?.keywords,
+    };
+  });
+
+  return { transcripts };
+}
+
+/**
+ * Transform raw MCP Slack response to internal format
+ */
+function transformMCPSlack(
+  data?: { messages: MCPSlackMessage[] }
+): { mentions: SlackMention[]; messages: SlackMessage[] } {
+  if (!data || !data.messages) {
+    return { mentions: [], messages: [] };
+  }
+
+  const messages: SlackMessage[] = data.messages.map(m => {
+    // Slack timestamp is Unix epoch in seconds (e.g., "1769624113.326679")
+    // Convert to ISO string for consistent handling
+    const unixSeconds = parseFloat(m.ts);
+    const isoTimestamp = new Date(unixSeconds * 1000).toISOString();
+
+    return {
+      channel: m.channel.id,
+      channelName: m.channel.name,
+      user: m.user,
+      userName: m.user_name,
+      text: m.text,
+      timestamp: isoTimestamp,
+      permalink: m.permalink,
+      threadTs: undefined,
+      replyCount: undefined,
+    };
+  });
+
+  // Extract mentions from messages (SlackMention wraps SlackMessage)
+  const mentions: SlackMention[] = messages.map(m => ({
+    message: m,
+    context: m.text.slice(0, 200),
+    sentiment: 'neutral' as const,
+  }));
+
+  return { mentions, messages };
+}
+
+/**
+ * Transform raw MCP Calendar response to internal format
+ */
+function transformMCPCalendar(
+  data?: { events: Array<{ id: string; title: string; start: string; end: string; attendees?: string[]; location?: string }> }
+): { events: CalendarEvent[] } {
+  if (!data || !data.events) {
+    return { events: [] };
+  }
+
+  const events: CalendarEvent[] = data.events.map(e => ({
+    id: e.id,
+    summary: e.title,
+    start: new Date(e.start),
+    end: new Date(e.end),
+    attendees: (e.attendees ?? []).map(email => ({
+      email,
+      responseStatus: 'accepted',
+    })),
+    location: e.location,
+    meetingLink: e.location?.startsWith('http') ? e.location : undefined,
+    status: 'confirmed' as const,
+  }));
+
+  return { events };
 }
 
 // --- Nightly Job Handler ---

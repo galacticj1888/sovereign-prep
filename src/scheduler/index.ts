@@ -27,4 +27,7 @@ export {
   type TriggerOptions,
   type TriggerResult,
   type BatchTriggerResult,
+  type MCPData,
+  type MCPFirefliesTranscript,
+  type MCPSlackMessage,
 } from './trigger.js';

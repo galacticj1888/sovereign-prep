@@ -92,10 +92,11 @@ async function handleGenerateAccount(args: string[]): Promise<void> {
 async function handleQuickGenerate(args: string[]): Promise<void> {
   const log = logger.child('cli');
   const accountName = args[0];
+  const outputPath = args[1]; // Optional: output file path
 
   if (!accountName) {
     console.error('Error: Account name is required');
-    console.error('Usage: npm run generate:quick "Account Name"');
+    console.error('Usage: npm run generate:quick "Account Name" [output.html]');
     process.exit(1);
   }
 
@@ -109,11 +110,21 @@ async function handleQuickGenerate(args: string[]): Promise<void> {
     skipDrive: true,
   });
 
-  console.log(generateTriggerReport(result));
-
-  if (result.htmlContent) {
-    console.log('\nHTML Preview (first 500 chars):');
-    console.log(result.htmlContent.slice(0, 500) + '...');
+  if (result.htmlContent && outputPath) {
+    // Write to file if output path provided
+    const fs = await import('fs/promises');
+    const path = await import('path');
+    const dir = path.dirname(outputPath);
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(outputPath, result.htmlContent);
+    log.info(`Dossier written to: ${outputPath}`);
+    console.log(`✓ Dossier saved to: ${outputPath}`);
+  } else {
+    console.log(generateTriggerReport(result));
+    if (result.htmlContent) {
+      console.log('\nHTML Preview (first 500 chars):');
+      console.log(result.htmlContent.slice(0, 500) + '...');
+    }
   }
 
   if (!result.success) {
